@@ -16,13 +16,13 @@ import java.util.List;
 public class WeatherController {
     private final ClientService clientService;
 
-    @GetMapping()
+    @GetMapping("/weather-forecast")
     public ResponseEntity<List<DayDto>> getWeatherForecast(double latitude, double longitude) {
         ClientResponse weatherFor7Days = clientService.getWeatherFor7Days(latitude, longitude);
         return null;
     }
 
-    @GetMapping()
+    @GetMapping("/week-summary")
     public ResponseEntity<WeekDto> getWeekSummary() {
         return null;
     }
