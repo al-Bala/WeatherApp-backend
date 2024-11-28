@@ -11,6 +11,7 @@ import com.weatherappbackend.weather.weeksummary.WeekMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -21,14 +22,20 @@ public class WeatherController {
     private final ClientService clientService;
     private final Weather weather;
 
-    @GetMapping("/weather-forecast")
-    public ResponseEntity<List<ForecastDto>> getWeatherForecast(double latitude, double longitude) {
+    @GetMapping("/weather-forecast/{latitude}/{longitude}")
+    public ResponseEntity<List<ForecastDto>> getWeatherForecast(
+            @PathVariable double latitude,
+            @PathVariable double longitude
+    ) {
         ForecastClientResponse weatherFor7Days = clientService.findForecastWeather(latitude, longitude);
         return null;
     }
 
-    @GetMapping("/week-summary")
-    public ResponseEntity<SummaryDto> getWeekSummary(double latitude, double longitude) {
+    @GetMapping("/week-summary/{latitude}/{longitude}")
+    public ResponseEntity<SummaryDto> getWeekSummary(
+            @PathVariable double latitude,
+            @PathVariable double longitude
+    ) {
         SummaryClientResponse summaryClientResponse = clientService.getSummaryWeather(latitude, longitude);
         SummaryWeather summaryWeather = WeekMapper.mapFromResponseToSummaryWeather(summaryClientResponse);
         SummaryDto summaryDto = weather.getWeekSummary(summaryWeather);

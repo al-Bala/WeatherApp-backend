@@ -1,7 +1,10 @@
 package com.weatherappbackend.clientweatherapi.response.forecast;
 
+import lombok.Builder;
+
 import java.util.List;
 
+@Builder
 public record ForecastDaily(
         List<String> time,
         List<Integer> weather_code,

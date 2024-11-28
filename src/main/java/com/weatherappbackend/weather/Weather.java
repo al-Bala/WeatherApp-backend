@@ -24,8 +24,8 @@ public class Weather {
     public SummaryDto getWeekSummary(SummaryWeather summaryWeather){
         double avgPressure = summary.countAvg(summaryWeather.pressureMsl());
         double avgSunTimeExposure = summary.countAvg(summaryWeather.sunshineDuration());
-        double minWeekTempC = summary.chooseMax(summaryWeather.temperatureMax());
-        double maxWeekTempC = summary.chooseMin(summaryWeather.temperatureMin());;
+        double minWeekTempC = summary.chooseMin(summaryWeather.temperatureMin());
+        double maxWeekTempC = summary.chooseMax(summaryWeather.temperatureMax());;
         Map<String, Boolean> description = summary.createDescription(summaryWeather.descElements());
 
         return SummaryDto.builder()
