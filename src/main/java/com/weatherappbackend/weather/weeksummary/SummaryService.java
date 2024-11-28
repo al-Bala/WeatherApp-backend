@@ -1,31 +1,19 @@
-package com.weatherappbackend.weatherforecast.week;
+package com.weatherappbackend.weather.weeksummary;
 
-import com.weatherappbackend.weatherforecast.day.DayWeather;
-import com.weatherappbackend.weatherforecast.week.description.DescriptionElement;
+import com.weatherappbackend.weather.Avg;
+import com.weatherappbackend.weather.weeksummary.description.DescriptionElement;
+import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class WeekSummary extends DayWeather implements Week {
-    private double avgPressure;
-    private double avgSunTimeExposure;
-    private double minWeekTempC;
-    private double maxWeekTempC;
-    private Map<String, Boolean> description;
-
-    @Override
-    public Week getWeek(LocalDate startDate) {
-        return new WeekSummary();
-    }
+@Component
+public class SummaryService implements Summary, Avg {
 
     @Override
     public double countAvg(List<Double> values) {
-        double sum = values.stream()
-                .mapToDouble(Double::doubleValue)
-                .sum();
-        return sum / values.size();
+        return getAvg(values);
     }
 
     @Override
@@ -56,8 +44,8 @@ public class WeekSummary extends DayWeather implements Week {
     }
 
     private void addToDescription(DescriptionElement descElement, Map<String, Boolean> description) {
-        double sum = descElement.sumValues();
-        boolean status = descElement.chooseStatus(sum);
+        double value = descElement.count();
+        boolean status = descElement.chooseStatus(value);
         description.put(descElement.getId(), status);
     }
 }

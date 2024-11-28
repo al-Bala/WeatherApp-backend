@@ -1,8 +1,8 @@
-package com.weatherappbackend.clientweatherapi.response;
+package com.weatherappbackend.clientweatherapi.response.forecast;
 
 import java.util.List;
 
-public record Daily(
+public record ForecastDaily(
         List<String> time,
         List<Integer> weather_code,
         List<Double> temperature_2m_max,

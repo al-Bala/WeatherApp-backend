@@ -1,11 +1,11 @@
-package com.weatherappbackend.weatherforecast.day;
+package com.weatherappbackend.weather.forecast;
 
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 
 @Component
-public class DayWeather implements Day {
+public class ForecastService implements Forecast {
     private LocalDate date;
     private int code;
     private int minDayTemp;
@@ -13,8 +13,8 @@ public class DayWeather implements Day {
     private double generatedEnergyKWH;
 
     @Override
-    public Day getDay(LocalDate date) {
-        return new DayWeather();
+    public Forecast getDay(LocalDate date) {
+        return new ForecastService();
     }
 
     @Override

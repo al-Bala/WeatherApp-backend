@@ -1,8 +1,11 @@
-package com.weatherappbackend.weatherforecast.day;
+package com.weatherappbackend.weather.forecast;
+
+import lombok.Builder;
 
 import java.time.LocalDate;
 
-public record DayDto(
+@Builder
+public record ForecastDto(
         LocalDate date,
         int code,
         int minDayTempC,

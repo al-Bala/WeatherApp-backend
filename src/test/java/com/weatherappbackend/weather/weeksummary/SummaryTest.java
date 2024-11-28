@@ -1,8 +1,8 @@
-package com.weatherappbackend.weatherforecast.week;
+package com.weatherappbackend.weather.weeksummary;
 
-import com.weatherappbackend.weatherforecast.week.description.DescriptionElement;
-import com.weatherappbackend.weatherforecast.week.description.Precipitation;
-import com.weatherappbackend.weatherforecast.week.description.Wind;
+import com.weatherappbackend.weather.weeksummary.description.DescriptionElement;
+import com.weatherappbackend.weather.weeksummary.description.Precipitation;
+import com.weatherappbackend.weather.weeksummary.description.Wind;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -10,8 +10,8 @@ import java.util.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-class WeekTest {
-    private final Week week = new WeekSummary();
+class SummaryTest {
+    private final Summary summary = new SummaryService();
 
     // pressure_msl (hPa)
     // sunshine_duration (s)
@@ -20,7 +20,7 @@ class WeekTest {
         // given
         List<Double> values = new ArrayList<>(List.of(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0));
         // when
-        double avg = week.countAvg(values);
+        double avg = summary.countAvg(values);
         // then
         assertEquals(5.0, avg);
     }
@@ -30,7 +30,7 @@ class WeekTest {
         // given
         List<Double> values = new ArrayList<>(List.of(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 9.0, 9.0));
         // when
-        double max = week.chooseMax(values);
+        double max = summary.chooseMax(values);
         // then
         assertEquals(9.0, max);
     }
@@ -40,8 +40,8 @@ class WeekTest {
         // given
         List<Double> values = new ArrayList<>();
         // when
-        double max = week.chooseMax(values);
-        double min = week.chooseMin(values);
+        double max = summary.chooseMax(values);
+        double min = summary.chooseMin(values);
         // then
         assertEquals(0.0001, max);
         assertEquals(0.0001, min);
@@ -52,7 +52,7 @@ class WeekTest {
         // given
         List<Double> values = new ArrayList<>(List.of(1.0, 1.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0));
         // when
-        double min = week.chooseMin(values);
+        double min = summary.chooseMin(values);
         // then
         assertEquals(1.0, min);
     }
@@ -62,7 +62,7 @@ class WeekTest {
         // given
         List<DescriptionElement> descElements = new ArrayList<>();
         // when
-        Map<String, Boolean> description = week.createDescription(descElements);
+        Map<String, Boolean> description = summary.createDescription(descElements);
         // then
         assertThat(description.containsKey("default")).isTrue();
     }
@@ -75,48 +75,48 @@ class WeekTest {
                 new Wind("wind", List.of(20.0, 20.0, 20.0, 20.0, 0.0, 0.0, 0.0))
         );
         // when
-        Map<String, Boolean> description = week.createDescription(descElements);
+        Map<String, Boolean> description = summary.createDescription(descElements);
         // then
         assertThat(description.containsKey("precipitation")).isFalse();
         assertThat(description.containsKey("wind")).isTrue();
     }
 
     @Test
-    void add_precipitation_true_when_sum_is_20_mm_and_wind_true_when_sum_is_80_kmh() {
+    void add_precipitation_true_when_is_4_or_more_rainy_days_and_wind_true_when_avg_is_20_kmh_or_more() {
         // given
         List<DescriptionElement> descElements = List.of(
-                new Precipitation("precipitation", List.of(10.0, 10.0, 0.0, 0.0, 8.0, 10.0, 10.0)),
-                new Wind("wind", List.of(20.0, 20.0, 20.0, 20.0, 0.0, 0.0, 0.0))
+                new Precipitation("precipitation", List.of(10.0, 10.0, 0.0, 0.0, 0.0, 10.0, 10.0)),
+                new Wind("wind", List.of(20.0, 22.0))
         );
         // when
-        Map<String, Boolean> description = week.createDescription(descElements);
+        Map<String, Boolean> description = summary.createDescription(descElements);
         // then
         assertThat(description.get("precipitation")).isTrue();
         assertThat(description.get("wind")).isTrue();
     }
 
     @Test
-    void add_precipitation_false_when_sum_is_less_then_20_mm() {
+    void add_precipitation_false_when_is_less_then_4_rainy_days() {
         // given
         List<DescriptionElement> descElements = List.of(
                 new Precipitation("precipitation", List.of(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)),
                 new Wind("wind", Collections.emptyList())
         );
         // when
-        Map<String, Boolean> description = week.createDescription(descElements);
+        Map<String, Boolean> description = summary.createDescription(descElements);
         // then
         assertThat(description.get("precipitation")).isFalse();
     }
 
     @Test
-    void add_wind_false_when_sum_is_less_then_80_kmh() {
+    void add_wind_false_when_avg_is_less_then_20_kmh() {
         // given
         List<DescriptionElement> descElements = List.of(
                 new Precipitation("precipitation", Collections.emptyList()),
                 new Wind("wind", List.of(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0))
         );
         // when
-        Map<String, Boolean> description = week.createDescription(descElements);
+        Map<String, Boolean> description = summary.createDescription(descElements);
         // then
         assertThat(description.get("wind")).isFalse();
     }
