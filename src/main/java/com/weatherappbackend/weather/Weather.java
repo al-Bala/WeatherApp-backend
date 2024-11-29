@@ -1,14 +1,17 @@
 package com.weatherappbackend.weather;
 
+import com.weatherappbackend.weather.forecast.DayForecast;
 import com.weatherappbackend.weather.forecast.Forecast;
-import com.weatherappbackend.weather.forecast.ForecastDto;
-import com.weatherappbackend.weather.weeksummary.SummaryWeather;
+import com.weatherappbackend.weather.forecast.ForecastDayDto;
+import com.weatherappbackend.weather.forecast.ForecastWeather;
 import com.weatherappbackend.weather.weeksummary.Summary;
 import com.weatherappbackend.weather.weeksummary.SummaryDto;
+import com.weatherappbackend.weather.weeksummary.SummaryWeather;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @AllArgsConstructor
@@ -17,8 +20,19 @@ public class Weather {
     private Forecast forecast;
     private Summary summary;
 
-    public ForecastDto getWeatherForecast(LocalDate date){
-        return ForecastDto.builder().build();
+    public List<ForecastDayDto> getWeatherForecast(ForecastWeather forecastWeather){
+        List<ForecastDayDto> weatherForecast = new ArrayList<>();
+        for(DayForecast day : forecastWeather.forecastDays()){
+            ForecastDayDto forecastDayDto = ForecastDayDto.builder()
+                    .date(day.time())
+                    .code(day.weatherCode())
+                    .minDayTempC(day.temperatureMin())
+                    .maxDayTempC(day.temperatureMax())
+                    .generatedPVEnergyKWH(forecast.countEnergy(day.sunshineDuration()))
+                    .build();
+            weatherForecast.add(forecastDayDto);
+        }
+        return weatherForecast;
     }
 
     public SummaryDto getWeekSummary(SummaryWeather summaryWeather){

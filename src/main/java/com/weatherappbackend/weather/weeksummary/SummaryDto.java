@@ -6,10 +6,10 @@ import java.util.Map;
 
 @Builder
 public record SummaryDto(
-        double avgPressure,
-        double avgSunTimeExposure,
-        double minWeekTempC,
-        double maxWeekTempC,
+        Double avgPressure,
+        Double avgSunTimeExposure,
+        Double minWeekTempC,
+        Double maxWeekTempC,
         Map<String, Boolean> description
 ) {
 }

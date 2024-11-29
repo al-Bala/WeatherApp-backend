@@ -4,10 +4,11 @@ import com.weatherappbackend.clientweatherapi.ClientService;
 import com.weatherappbackend.clientweatherapi.response.forecast.ForecastClientResponse;
 import com.weatherappbackend.clientweatherapi.response.summary.SummaryClientResponse;
 import com.weatherappbackend.weather.Weather;
-import com.weatherappbackend.weather.forecast.ForecastDto;
+import com.weatherappbackend.weather.forecast.ForecastDayDto;
+import com.weatherappbackend.weather.forecast.ForecastWeather;
 import com.weatherappbackend.weather.weeksummary.SummaryWeather;
 import com.weatherappbackend.weather.weeksummary.SummaryDto;
-import com.weatherappbackend.weather.weeksummary.WeekMapper;
+import com.weatherappbackend.weather.WeatherMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,12 +24,14 @@ public class WeatherController {
     private final Weather weather;
 
     @GetMapping("/weather-forecast/{latitude}/{longitude}")
-    public ResponseEntity<List<ForecastDto>> getWeatherForecast(
+    public ResponseEntity<List<ForecastDayDto>> getWeatherForecast(
             @PathVariable double latitude,
             @PathVariable double longitude
     ) {
-        ForecastClientResponse weatherFor7Days = clientService.findForecastWeather(latitude, longitude);
-        return null;
+        ForecastClientResponse forecastClientResponse = clientService.findForecastWeather(latitude, longitude);
+        ForecastWeather forecastWeather = WeatherMapper.mapFromResponseToForecastWeather(forecastClientResponse);
+        List<ForecastDayDto> weatherForecast = weather.getWeatherForecast(forecastWeather);
+        return ResponseEntity.ok(weatherForecast);
     }
 
     @GetMapping("/week-summary/{latitude}/{longitude}")
@@ -37,7 +40,7 @@ public class WeatherController {
             @PathVariable double longitude
     ) {
         SummaryClientResponse summaryClientResponse = clientService.getSummaryWeather(latitude, longitude);
-        SummaryWeather summaryWeather = WeekMapper.mapFromResponseToSummaryWeather(summaryClientResponse);
+        SummaryWeather summaryWeather = WeatherMapper.mapFromResponseToSummaryWeather(summaryClientResponse);
         SummaryDto summaryDto = weather.getWeekSummary(summaryWeather);
         return ResponseEntity.ok(summaryDto);
     }

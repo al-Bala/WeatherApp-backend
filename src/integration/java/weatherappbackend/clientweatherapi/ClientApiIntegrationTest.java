@@ -1,17 +1,23 @@
 package weatherappbackend.clientweatherapi;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.weatherappbackend.WeatherBackendApplication;
+import com.weatherappbackend.weather.forecast.ForecastDayDto;
+import com.weatherappbackend.weather.weeksummary.SummaryDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(classes = WeatherBackendApplication.class)
 @AutoConfigureMockMvc
@@ -24,20 +30,24 @@ public class ClientApiIntegrationTest {
     public ObjectMapper objectMapper;
 
     @Test
-    public void testClientIntegration() throws Exception {
+    public void connect_with_api_for_weather_forecast() throws Exception {
+        ResultActions forecastPerform = mockMvc.perform(get("/weather-forecast/52.52/13.41"));
 
-        ResultActions perform = mockMvc.perform(get("/week-summary/52.52/13.41")
-                .content("""
-                        {
-                        "latitude": 50.3,
-                        "longitude": 51.2
-                        }
-                        """.trim())
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-        );
+        MvcResult foreactMvcResult = forecastPerform.andExpect(status().isOk()).andReturn();
+        String forecastAsString = foreactMvcResult.getResponse().getContentAsString();
+        List<ForecastDayDto> forecastDaysDto = objectMapper.readValue(forecastAsString, new TypeReference<List<ForecastDayDto>>() {});
+        System.out.println(forecastDaysDto);
 
-        MvcResult mvcResult = perform.andReturn();
-        String contentAsString = mvcResult.getResponse().getContentAsString();
-        System.out.println(contentAsString);
+        assertThat(forecastDaysDto.size()).isEqualTo(7);
+    }
+
+    @Test
+    public void connect_with_api_for_week_summary() throws Exception {
+        ResultActions summaryPerform = mockMvc.perform(get("/week-summary/52.52/13.41"));
+
+        MvcResult summaryMvcResult = summaryPerform.andExpect(status().isOk()).andReturn();
+        String summaryAsString = summaryMvcResult.getResponse().getContentAsString();
+        SummaryDto summaryDto = objectMapper.readValue(summaryAsString, SummaryDto.class);
+        System.out.println(summaryDto);
     }
 }

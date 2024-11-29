@@ -4,6 +4,8 @@ import com.weatherappbackend.clientweatherapi.ClientService;
 import com.weatherappbackend.clientweatherapi.WeatherProxyTestImpl;
 import com.weatherappbackend.weather.Weather;
 import com.weatherappbackend.weather.forecast.Forecast;
+import com.weatherappbackend.weather.forecast.ForecastDayDto;
+import com.weatherappbackend.weather.forecast.ForecastService;
 import com.weatherappbackend.weather.weeksummary.Summary;
 import com.weatherappbackend.weather.weeksummary.SummaryDto;
 import com.weatherappbackend.weather.weeksummary.SummaryService;
@@ -11,9 +13,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mock;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class WeatherControllerTest {
 
@@ -21,13 +25,25 @@ class WeatherControllerTest {
 
     @BeforeEach
     void setUp() {
-        Forecast mockForecast = mock(Forecast.class);
+        Forecast mockForecast = new ForecastService();
         Summary summary = new SummaryService();
 
         weatherController = new WeatherController(
                 new ClientService(new WeatherProxyTestImpl()),
                 new Weather(mockForecast, summary)
         );
+    }
+
+    @Test
+    public void weather_forecast_controller_test() {
+        ResponseEntity<List<ForecastDayDto>> response = weatherController.getWeatherForecast(52.52, 13.41);
+        List<ForecastDayDto> forecastDaysDto = response.getBody();
+        System.out.println(forecastDaysDto);
+
+        assert forecastDaysDto != null;
+        assertThat(forecastDaysDto.size()).isEqualTo(7);
+        assertTrue(forecastDaysDto.get(0).date().matches("\\d{2}.\\d{2}.\\d{4}"));
+        assertEquals(5.0, forecastDaysDto.get(0).generatedPVEnergyKWH());
     }
 
     @Test
