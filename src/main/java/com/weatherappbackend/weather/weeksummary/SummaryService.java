@@ -1,6 +1,7 @@
 package com.weatherappbackend.weather.weeksummary;
 
 import com.weatherappbackend.weather.Avg;
+import com.weatherappbackend.weather.Rounding;
 import com.weatherappbackend.weather.weeksummary.description.DescriptionElement;
 import org.springframework.stereotype.Component;
 
@@ -9,11 +10,12 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-public class SummaryService implements Summary, Avg {
+public class SummaryService implements Summary, Avg, Rounding {
 
     @Override
     public double countAvg(List<Double> values) {
-        return getAvg(values);
+        double avg = getAvg(values);
+        return round(avg);
     }
 
     @Override
