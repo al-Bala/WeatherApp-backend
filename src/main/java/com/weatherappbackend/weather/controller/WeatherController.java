@@ -12,7 +12,7 @@ import com.weatherappbackend.weather.weeksummary.SummaryWeather;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -23,38 +23,27 @@ public class WeatherController {
     private final ClientService clientService;
     private final Weather weather;
 
-    @GetMapping("/weather-forecast/{latitude}/{longitude}")
+    @GetMapping("/weather-forecast")
     public ResponseEntity<List<ForecastDayDto>> getWeatherForecast(
-            @PathVariable String latitude,
-            @PathVariable String longitude
+            @RequestParam Double latitude,
+            @RequestParam Double longitude
     ) {
-        if(isCoordinatesValid(latitude, longitude)) {
-            return ResponseEntity.badRequest().build();
-        }
         ForecastClientResponse forecastClientResponse =
-                clientService.findForecastWeather(Double.parseDouble(latitude), Double.parseDouble(longitude));
+                clientService.findForecastWeather(latitude, longitude);
         ForecastWeather forecastWeather = WeatherMapper.mapFromResponseToForecastWeather(forecastClientResponse);
         List<ForecastDayDto> weatherForecast = weather.getWeatherForecast(forecastWeather);
         return ResponseEntity.ok(weatherForecast);
     }
 
-    @GetMapping("/week-summary/{latitude}/{longitude}")
+    @GetMapping("/week-summary")
     public ResponseEntity<SummaryDto> getWeekSummary(
-            @PathVariable String latitude,
-            @PathVariable String longitude
+            @RequestParam Double latitude,
+            @RequestParam Double longitude
     ) {
-        if(isCoordinatesValid(latitude, longitude)) {
-            return ResponseEntity.badRequest().build();
-        }
         SummaryClientResponse summaryClientResponse =
-                clientService.getSummaryWeather(Double.parseDouble(latitude), Double.parseDouble(longitude));
+                clientService.getSummaryWeather(latitude, longitude);
         SummaryWeather summaryWeather = WeatherMapper.mapFromResponseToSummaryWeather(summaryClientResponse);
         SummaryDto summaryDto = weather.getWeekSummary(summaryWeather);
         return ResponseEntity.ok(summaryDto);
-    }
-
-    private static boolean isCoordinatesValid(String latitude, String longitude) {
-        String regex = "\\d+.\\d+";
-        return !latitude.matches(regex) && !longitude.matches(regex);
     }
 }

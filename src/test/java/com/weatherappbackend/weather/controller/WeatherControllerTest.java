@@ -36,7 +36,7 @@ class WeatherControllerTest {
 
     @Test
     public void weather_forecast_controller_test() {
-        ResponseEntity<List<ForecastDayDto>> response = weatherController.getWeatherForecast("52.52", "13.41");
+        ResponseEntity<List<ForecastDayDto>> response = weatherController.getWeatherForecast(52.52, 13.41);
         List<ForecastDayDto> forecastDaysDto = response.getBody();
         System.out.println(forecastDaysDto);
 
@@ -48,7 +48,7 @@ class WeatherControllerTest {
 
     @Test
     public void week_summary_controller_test() {
-        ResponseEntity<SummaryDto> response = weatherController.getWeekSummary("52.52", "13.41");
+        ResponseEntity<SummaryDto> response = weatherController.getWeekSummary(52.52, 13.41);
         SummaryDto summaryDto = response.getBody();
         System.out.println(summaryDto);
 

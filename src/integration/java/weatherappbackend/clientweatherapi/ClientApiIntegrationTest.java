@@ -31,7 +31,7 @@ public class ClientApiIntegrationTest {
 
     @Test
     public void connect_with_api_for_weather_forecast() throws Exception {
-        ResultActions forecastPerform = mockMvc.perform(get("/weather-forecast/52.52/13.41"));
+        ResultActions forecastPerform = mockMvc.perform(get("/weather-forecast?latitude=52.52&longitude=13.41"));
 
         MvcResult foreactMvcResult = forecastPerform.andExpect(status().isOk()).andReturn();
         String forecastAsString = foreactMvcResult.getResponse().getContentAsString();
@@ -43,7 +43,7 @@ public class ClientApiIntegrationTest {
 
     @Test
     public void connect_with_api_for_week_summary() throws Exception {
-        ResultActions summaryPerform = mockMvc.perform(get("/week-summary/52.52/13.41"));
+        ResultActions summaryPerform = mockMvc.perform(get("/week-summary?latitude=52.52&longitude=13.41"));
 
         MvcResult summaryMvcResult = summaryPerform.andExpect(status().isOk()).andReturn();
         String summaryAsString = summaryMvcResult.getResponse().getContentAsString();
