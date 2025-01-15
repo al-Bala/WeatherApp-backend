@@ -16,8 +16,6 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class WeatherControllerTest {
 
@@ -42,8 +40,8 @@ class WeatherControllerTest {
 
         assert forecastDaysDto != null;
         assertThat(forecastDaysDto.size()).isEqualTo(7);
-        assertTrue(forecastDaysDto.get(0).date().matches("\\d{2}.\\d{2}.\\d{4}"));
-        assertEquals(5.0, forecastDaysDto.get(0).generatedPVEnergyKWH());
+        assertThat(forecastDaysDto.get(0).date().matches("\\d{2}.\\d{2}.\\d{4}")).isTrue();
+        assertThat(forecastDaysDto.get(0).generatedPVEnergyKWH()).isEqualTo(5.0);
     }
 
     @Test
@@ -53,13 +51,13 @@ class WeatherControllerTest {
         System.out.println(summaryDto);
 
         assert summaryDto != null;
-        assertEquals(5.0, summaryDto.avgPressure());
-        assertEquals(500.0, summaryDto.avgSunTimeExposure());
-        assertEquals(-7.5, summaryDto.minWeekTempC());
-        assertEquals(8.0, summaryDto.maxWeekTempC());
+        assertThat(summaryDto.avgPressure()).isEqualTo(5.0);
+        assertThat(summaryDto.avgSunTimeExposure()).isEqualTo(500.0);
+        assertThat(summaryDto.minWeekTempC()).isEqualTo(-7.5);
+        assertThat(summaryDto.maxWeekTempC()).isEqualTo(8.0);
         assertThat(summaryDto.description()).containsKey("precipitation");
-        assertEquals(true, summaryDto.description().get("precipitation"));
+        assertThat(summaryDto.description().get("precipitation")).isTrue();
         assertThat(summaryDto.description()).containsKey("wind");
-        assertEquals(false, summaryDto.description().get("wind"));
+        assertThat(summaryDto.description().get("wind")).isFalse();
     }
 }

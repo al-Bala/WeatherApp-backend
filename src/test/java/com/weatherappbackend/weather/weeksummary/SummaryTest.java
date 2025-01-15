@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 class SummaryTest {
     private final Summary summary = new SummaryService();
@@ -22,7 +21,7 @@ class SummaryTest {
         // when
         double avg = summary.countAvg(values);
         // then
-        assertEquals(5.0, avg);
+        assertThat(avg).isEqualTo(5.0);
     }
 
     @Test
@@ -32,7 +31,7 @@ class SummaryTest {
         // when
         double max = summary.chooseMax(values);
         // then
-        assertEquals(9.0, max);
+        assertThat(max).isEqualTo(9.0);
     }
 
     @Test
@@ -43,8 +42,8 @@ class SummaryTest {
         double max = summary.chooseMax(values);
         double min = summary.chooseMin(values);
         // then
-        assertEquals(0.0001, max);
-        assertEquals(0.0001, min);
+        assertThat(max).isEqualTo(0.0001);
+        assertThat(min).isEqualTo(0.0001);
     }
 
     @Test
@@ -54,7 +53,7 @@ class SummaryTest {
         // when
         double min = summary.chooseMin(values);
         // then
-        assertEquals(1.0, min);
+        assertThat(min).isEqualTo(1.0);
     }
 
     @Test
