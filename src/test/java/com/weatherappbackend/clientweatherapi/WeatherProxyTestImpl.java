@@ -20,7 +20,7 @@ public class WeatherProxyTestImpl implements WeatherProxy{
                         .weather_code(List.of(1,2,3,4,5,6,7,8,9))
                         .temperature_2m_max(List.of(1.0,2.0,3.0,4.0,5.0,6.0,7.0))
                         .temperature_2m_min(List.of(1.0,2.0,3.0,4.0,5.0,6.0,7.0))
-                        .sunshine_duration(List.of(10.0, 20.0, 30.0, 40.0, 50.0, 60.0, 70.0))
+                        .sunshine_duration(List.of(36000.00, 16000.00, 4000.00, 10000.00, 6000.00, 0.00, 0.00))
                         .build()
         );
     }
