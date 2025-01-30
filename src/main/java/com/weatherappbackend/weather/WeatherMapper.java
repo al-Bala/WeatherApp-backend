@@ -10,6 +10,7 @@ import com.weatherappbackend.weather.weeksummary.description.DescriptionElement;
 import com.weatherappbackend.weather.weeksummary.description.Precipitation;
 import com.weatherappbackend.weather.weeksummary.description.Wind;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ public class WeatherMapper {
                     .weatherCode(response.weather_code().get(i))
                     .temperatureMax(response.temperature_2m_max().get(i))
                     .temperatureMin(response.temperature_2m_min().get(i))
-                    .sunshineDuration(convertToHours(response.sunshine_duration().get(i)))
+                    .sunshineDurationSec(BigDecimal.valueOf(response.sunshine_duration().get(i)))
                     .build();
             forecastDays.add(dayForecast);
         }
@@ -38,10 +39,6 @@ public class WeatherMapper {
     private static String formatDate(LocalDate date){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
         return formatter.format(date);
-    }
-
-    private static Double convertToHours(Double sunshineSecs){
-        return sunshineSecs / 3600.0;
     }
 
     public static SummaryWeather mapFromResponseToSummaryWeather(SummaryClientResponse summaryClientResponse) {

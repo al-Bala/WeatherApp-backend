@@ -28,7 +28,7 @@ public class Weather {
                     .code(day.weatherCode())
                     .minDayTempC(day.temperatureMin())
                     .maxDayTempC(day.temperatureMax())
-                    .generatedPVEnergyKWH(forecast.countEnergy(day.sunshineDuration()))
+                    .generatedPVEnergyKWH(forecast.countEnergy(day.sunshineDurationSec()))
                     .build();
             weatherForecast.add(forecastDayDto);
         }
