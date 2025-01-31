@@ -28,4 +28,10 @@ class ForecastServiceTest {
         Double v = forecastService.countEnergy(new BigDecimal("15683.76"));
         assertThat(v).isEqualTo(2.18);
     }
+
+    @Test
+    void count_energy_for_test_data_716_22_sec() {
+        Double v = forecastService.countEnergy(new BigDecimal("716.22"));
+        assertThat(v).isEqualTo(0.1);
+    }
 }
