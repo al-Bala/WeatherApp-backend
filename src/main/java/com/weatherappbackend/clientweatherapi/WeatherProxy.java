@@ -6,7 +6,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient(value = "weather-client")
+@FeignClient(name = "weatherClient", url = "${weather-client.url}")
 public interface WeatherProxy {
 
     @GetMapping("/v1/forecast")
