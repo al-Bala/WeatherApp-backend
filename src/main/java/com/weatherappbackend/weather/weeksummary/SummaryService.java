@@ -3,10 +3,7 @@ package com.weatherappbackend.weather.weeksummary;
 import com.weatherappbackend.weather.weeksummary.description.DescriptionElement;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class SummaryService implements Summary {
@@ -35,18 +32,17 @@ public class SummaryService implements Summary {
 
     @Override
     public Map<String, Boolean> createDescription(List<DescriptionElement> descElements) {
-        Map<String, Boolean> description = new HashMap<>();
+        Map<String, Boolean> description = descElements.stream()
+                .filter(descElement -> descElement.getValues().length != 0)
+                .collect(HashMap::new, this::addToDescription, HashMap::putAll);
 
-        for(DescriptionElement descElement : descElements) {
-            if(descElement.getValues().length != 0)
-                addToDescription(descElement, description);
-        }
-        if(description.isEmpty())
+        if (description.isEmpty())
             description.put("default", true);
+
         return description;
     }
 
-    private void addToDescription(DescriptionElement descElement, Map<String, Boolean> description) {
+    private void addToDescription(Map<String, Boolean> description, DescriptionElement descElement) {
         double value = descElement.count();
         boolean status = descElement.chooseStatus(value);
         description.put(descElement.getId(), status);
