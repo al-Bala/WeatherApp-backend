@@ -2,12 +2,13 @@ package com.weatherappbackend.weather.controller;
 
 import com.weatherappbackend.clientweatherapi.ClientService;
 import com.weatherappbackend.clientweatherapi.WeatherProxyTestImpl;
-import com.weatherappbackend.weather.Weather;
 import com.weatherappbackend.weather.forecast.Forecast;
 import com.weatherappbackend.weather.forecast.ForecastDayDto;
+import com.weatherappbackend.weather.forecast.ForecastFacade;
 import com.weatherappbackend.weather.forecast.ForecastService;
 import com.weatherappbackend.weather.weeksummary.Summary;
 import com.weatherappbackend.weather.weeksummary.SummaryDto;
+import com.weatherappbackend.weather.weeksummary.SummaryFacade;
 import com.weatherappbackend.weather.weeksummary.SummaryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,12 +24,12 @@ class WeatherControllerTest {
 
     @BeforeEach
     void setUp() {
-        Forecast mockForecast = new ForecastService();
+        Forecast forecast = new ForecastService();
         Summary summary = new SummaryService();
 
         weatherController = new WeatherController(
-                new ClientService(new WeatherProxyTestImpl()),
-                new Weather(mockForecast, summary)
+                new ForecastFacade(new ClientService(new WeatherProxyTestImpl()), forecast),
+                new SummaryFacade(new ClientService(new WeatherProxyTestImpl()), summary)
         );
     }
 

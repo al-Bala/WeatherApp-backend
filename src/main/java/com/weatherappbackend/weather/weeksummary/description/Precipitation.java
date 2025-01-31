@@ -1,17 +1,17 @@
 package com.weatherappbackend.weather.weeksummary.description;
 
-import java.util.List;
+import java.util.Arrays;
 
 public class Precipitation extends DescriptionElement {
 
-    public Precipitation(String id, List<Double> values) {
+    public Precipitation(String id, double[] values) {
         super(id, values);
     }
 
     @Override
     public double count() {
-        List<Double> values = getValues();
-        return values.stream()
+        double[] values = getValues();
+        return Arrays.stream(values)
                 .filter(v -> v > 1.0)
                 .count();
     }

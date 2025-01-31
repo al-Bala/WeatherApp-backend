@@ -1,34 +1,35 @@
 package com.weatherappbackend.weather.weeksummary;
 
-import com.weatherappbackend.weather.Avg;
-import com.weatherappbackend.weather.Rounding;
 import com.weatherappbackend.weather.weeksummary.description.DescriptionElement;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Component
-public class SummaryService implements Summary, Avg, Rounding {
+@Service
+public class SummaryService implements Summary {
 
     @Override
-    public double countAvg(List<Double> values) {
-        double avg = getAvg(values);
-        return round(avg);
+    public double countAvg(double[] values) {
+        double value = Arrays.stream(values)
+                .average()
+                .orElse(0);
+        return Math.round(value);
     }
 
     @Override
-    public double chooseMax(List<Double> values) {
-        return values.stream()
-                .max(Double::compareTo)
+    public double chooseMax(double[] values) {
+        return Arrays.stream(values)
+                .max()
                 .orElse(0.0001);
     }
 
     @Override
-    public double chooseMin(List<Double> values) {
-        return values.stream()
-                .min(Double::compareTo)
+    public double chooseMin(double[] values) {
+        return Arrays.stream(values)
+                .min()
                 .orElse(0.0001);
     }
 
@@ -37,7 +38,7 @@ public class SummaryService implements Summary, Avg, Rounding {
         Map<String, Boolean> description = new HashMap<>();
 
         for(DescriptionElement descElement : descElements) {
-            if(!descElement.getValues().isEmpty())
+            if(descElement.getValues().length != 0)
                 addToDescription(descElement, description);
         }
         if(description.isEmpty())

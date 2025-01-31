@@ -1,14 +1,13 @@
 package com.weatherappbackend.weather.forecast;
 
-import com.weatherappbackend.weather.Rounding;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 
-@Component
-public class ForecastService implements Forecast, Rounding {
+@Service
+public class ForecastService implements Forecast {
 
     private final static BigDecimal PHOTOVOLTAIC_POWER = new BigDecimal("2.5");
     private final static BigDecimal PANELS_EFFICIENCY = new BigDecimal("0.2");

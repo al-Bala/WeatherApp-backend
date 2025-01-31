@@ -16,11 +16,11 @@ public class WeatherProxyTestImpl implements WeatherProxy{
     public ForecastClientResponse makeQueryForForecastWeather(double latitude, double longitude, String[] daily) {
         return new ForecastClientResponse(
                 ForecastDaily.builder()
-                        .time(getNextSevenDays())
-                        .weather_code(List.of(1,2,3,4,5,6,7,8,9))
-                        .temperature_2m_max(List.of(1.0,2.0,3.0,4.0,5.0,6.0,7.0))
-                        .temperature_2m_min(List.of(1.0,2.0,3.0,4.0,5.0,6.0,7.0))
-                        .sunshine_duration(List.of(36000.00, 16000.00, 4000.00, 10000.00, 6000.00, 0.00, 0.00))
+                        .date(getNextSevenDays())
+                        .weatherCode(List.of(1,2,3,4,5,6,7,8,9))
+                        .temperatureMax(List.of(1.0,2.0,3.0,4.0,5.0,6.0,7.0))
+                        .temperatureMin(List.of(1.0,2.0,3.0,4.0,5.0,6.0,7.0))
+                        .sunshineDurationSec(new double[]{36000.00, 16000.00, 4000.00, 10000.00, 6000.00, 0.00, 0.00})
                         .build()
         );
     }
@@ -36,14 +36,14 @@ public class WeatherProxyTestImpl implements WeatherProxy{
     public SummaryClientResponse makeQueryForSummaryWeather(double latitude, double longitude, String[] hourly, String[] daily) {
         return new SummaryClientResponse(
                 SummaryHourly.builder()
-                        .pressure_msl(List.of(4.0, 6.0))
-                        .wind_speed_10m(List.of(10.0, 20.0))
+                        .pressureMsl(new double[]{4.0, 6.0})
+                        .windSpeed(new double[]{10.0, 20.0})
                         .build(),
                 SummaryDaily.builder()
-                        .sunshine_duration(List.of(400.0, 600.0))
-                        .temperature_2m_max(List.of(-2.0, 6.0, 8.0))
-                        .temperature_2m_min(List.of(-7.5, -1.0, 0.0))
-                        .precipitation_sum(List.of(0.0, 2.0, 0.0, 3.0, 3.0, 3.0, 0.0))
+                        .sunshineDurationSec(new double[]{400.0, 600.0})
+                        .temperatureMax(new double[]{-2.0, 6.0, 8.0})
+                        .temperatureMin(new double[]{-7.5, -1.0, 0.0})
+                        .precipitationSum(new double[]{0.0, 2.0, 0.0, 3.0, 3.0, 3.0, 0.0})
                         .build()
         );
     }

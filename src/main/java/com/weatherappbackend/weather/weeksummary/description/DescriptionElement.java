@@ -1,16 +1,13 @@
 package com.weatherappbackend.weather.weeksummary.description;
 
-import com.weatherappbackend.weather.Avg;
 import lombok.Getter;
 
-import java.util.List;
-
 @Getter
-public abstract class DescriptionElement implements Avg {
+public abstract class DescriptionElement {
     private final String id;
-    private final List<Double> values;
+    private final double[] values;
 
-    public DescriptionElement(String id, List<Double> values) {
+    public DescriptionElement(String id, double[] values) {
         this.id = id;
         this.values = values;
     }

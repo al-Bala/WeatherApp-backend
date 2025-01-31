@@ -6,8 +6,8 @@ import lombok.Builder;
 public record ForecastDayDto(
         String date,
         Integer code,
-        Double minDayTempC,
         Double maxDayTempC,
+        Double minDayTempC,
         Double generatedPVEnergyKWH
 ) {
 }

@@ -1,17 +1,19 @@
 package com.weatherappbackend.weather.weeksummary.description;
 
-import java.util.List;
+import java.util.Arrays;
 
 public class Wind extends DescriptionElement {
 
-    public Wind(String id, List<Double> values) {
+    public Wind(String id, double[] values) {
         super(id, values);
     }
 
     @Override
     public double count() {
-        List<Double> values = getValues();
-        return getAvg(values);
+        double[] values = getValues();
+        return Arrays.stream(values)
+                .average()
+                .orElse(0);
     }
 
     @Override

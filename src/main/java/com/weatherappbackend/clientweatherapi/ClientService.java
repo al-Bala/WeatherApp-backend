@@ -10,12 +10,12 @@ import org.springframework.stereotype.Service;
 public class ClientService {
     private final WeatherProxy proxy;
 
-    public ForecastClientResponse findForecastWeather(double latitude, double longitude){
+    public ForecastClientResponse fetchForecastWeather(double latitude, double longitude){
         String[] dailyParams = {"weather_code", "temperature_2m_max", "temperature_2m_min", "sunshine_duration"};
         return proxy.makeQueryForForecastWeather(latitude, longitude, dailyParams);
     }
 
-    public SummaryClientResponse getSummaryWeather(double latitude, double longitude){
+    public SummaryClientResponse fetchSummaryWeather(double latitude, double longitude){
         String[] hourlyParams = {"pressure_msl", "wind_speed_10m"};
         String[] dailyParams = {"sunshine_duration", "temperature_2m_max", "temperature_2m_min", "precipitation_sum"};
         return proxy.makeQueryForSummaryWeather(latitude, longitude, hourlyParams, dailyParams);
