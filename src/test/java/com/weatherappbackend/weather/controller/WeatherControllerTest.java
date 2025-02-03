@@ -1,17 +1,21 @@
 package com.weatherappbackend.weather.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.weatherappbackend.weather.forecast.ForecastDayDto;
-import com.weatherappbackend.weather.forecast.ForecastFacade;
 import com.weatherappbackend.weather.weeksummary.SummaryDto;
-import com.weatherappbackend.weather.weeksummary.SummaryFacade;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockserver.client.MockServerClient;
 import org.mockserver.model.Header;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 import org.testcontainers.containers.MockServerContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -23,12 +27,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 import static org.mockserver.model.JsonBody.json;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureMockMvc
 @Testcontainers
 public class WeatherControllerTest {
-    private final static double LATITUDE_VALUE = 52.52;
-    private final static double LONGITUDE_VALUE = 13.41;
 
     @Container
     static MockServerContainer mockServerContainer = new MockServerContainer(
@@ -38,10 +43,10 @@ public class WeatherControllerTest {
     static MockServerClient mockServerClient;
 
     @Autowired
-    private ForecastFacade forecastFacade;
+    public MockMvc mockMvc;
 
     @Autowired
-    private SummaryFacade summaryFacade;
+    public ObjectMapper objectMapper;
 
     @DynamicPropertySource
     static void overrideProperties(DynamicPropertyRegistry registry) {
@@ -59,13 +64,16 @@ public class WeatherControllerTest {
     }
 
     @Test
-    void weather_forecast_controller_test() {
+    void forecast_controller_happy_path() throws Exception {
+        double latitudeValue = 52.52;
+        double longitudeValue = 13.41;
+
         mockServerClient
                 .when(
                         request().withMethod("GET")
                                 .withPath("/v1/forecast")
-                                .withQueryStringParameter("latitude", String.valueOf(LATITUDE_VALUE))
-                                .withQueryStringParameter("longitude", String.valueOf(LONGITUDE_VALUE))
+                                .withQueryStringParameter("latitude", String.valueOf(latitudeValue))
+                                .withQueryStringParameter("longitude", String.valueOf(longitudeValue))
                                 .withQueryStringParameter("daily", "weather_code,temperature_2m_max,temperature_2m_min,sunshine_duration")
                 )
                 .respond(
@@ -129,20 +137,52 @@ public class WeatherControllerTest {
                                 )
                 );
 
-        List<ForecastDayDto> weatherForecast = forecastFacade.getWeatherForecast(LATITUDE_VALUE, LONGITUDE_VALUE);
-        System.out.println(weatherForecast);
+        ResultActions forecastPerform = mockMvc
+                .perform(get("/weather-forecast?latitude="+ latitudeValue + "&longitude=" + longitudeValue));
 
-        assertThat(weatherForecast).hasSize(7);
+        MvcResult foreactMvcResult = forecastPerform.andExpect(status().isOk()).andReturn();
+        String forecastAsString = foreactMvcResult.getResponse().getContentAsString();
+        List<ForecastDayDto> forecastDaysDto = objectMapper.readValue(forecastAsString, new TypeReference<List<ForecastDayDto>>() {});
+        System.out.println("Result: " + forecastDaysDto);
+
+        assertThat(forecastDaysDto).hasSize(7);
     }
 
     @Test
-    void week_summary_controller_test() {
+    void forecast_controller_param_out_of_range() throws Exception {
+        double latitudeValue = 52.52;
+        double longitudeValue = -190.5;
+
+        ResultActions forecastPerform = mockMvc
+                .perform(get("/weather-forecast?latitude="+ latitudeValue + "&longitude=" + longitudeValue));
+
+        forecastPerform.andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void forecast_controller_wrong_param_type() throws Exception {
+        String latitudeValue = "string";
+        double longitudeValue = 13.41;
+
+        ResultActions forecastPerform = mockMvc
+                .perform(get("/weather-forecast?latitude="+ latitudeValue + "&longitude=" + longitudeValue));
+
+        ResultActions wrongParamResult = forecastPerform.andExpect(status().isBadRequest());
+        String errorMessage = wrongParamResult.andReturn().getResponse().getContentAsString();
+        System.out.println("Message: " + errorMessage);
+    }
+
+    @Test
+    void summary_controller_happy_path() throws Exception {
+        double latitudeValue = 52.52;
+        double longitudeValue = 13.41;
+
         mockServerClient
                 .when(
                         request().withMethod("GET")
                                 .withPath("/v1/forecast")
-                                .withQueryStringParameter("latitude", String.valueOf(LATITUDE_VALUE))
-                                .withQueryStringParameter("longitude", String.valueOf(LONGITUDE_VALUE))
+                                .withQueryStringParameter("latitude", String.valueOf(latitudeValue))
+                                .withQueryStringParameter("longitude", String.valueOf(longitudeValue))
                                 .withQueryStringParameter("hourly", "pressure_msl,wind_speed_10m")
                                 .withQueryStringParameter("daily", "sunshine_duration,temperature_2m_max,temperature_2m_min,precipitation_sum")
                 )
@@ -206,16 +246,45 @@ public class WeatherControllerTest {
                                 )
                 );
 
-        SummaryDto weekSummary = summaryFacade.getWeekSummary(LATITUDE_VALUE, LONGITUDE_VALUE);
-        System.out.println(weekSummary);
+        ResultActions summaryPerform  = mockMvc
+                .perform(get("/week-summary?latitude="+ latitudeValue + "&longitude=" + longitudeValue));
 
-        assertThat(weekSummary.avgPressure()).isEqualTo(1041.0);
-        assertThat(weekSummary.avgSunTimeExposure()).isEqualTo(16024.0);
-        assertThat(weekSummary.minWeekTempC()).isEqualTo(-0.9);
-        assertThat(weekSummary.maxWeekTempC()).isEqualTo(6.1);
-        assertThat(weekSummary.description()).containsKey("precipitation");
-        assertThat(weekSummary.description().get("precipitation")).isFalse();
-        assertThat(weekSummary.description()).containsKey("wind");
-        assertThat(weekSummary.description().get("wind")).isFalse();
+        MvcResult summaryMvcResult  = summaryPerform.andExpect(status().isOk()).andReturn();
+        String summaryAsString  = summaryMvcResult .getResponse().getContentAsString();
+        SummaryDto summaryDto = objectMapper.readValue(summaryAsString, SummaryDto.class);
+        System.out.println("Result: " + summaryDto);
+
+        assertThat(summaryDto.avgPressure()).isEqualTo(1041.0);
+        assertThat(summaryDto.avgSunTimeExposure()).isEqualTo(16024.0);
+        assertThat(summaryDto.minWeekTempC()).isEqualTo(-0.9);
+        assertThat(summaryDto.maxWeekTempC()).isEqualTo(6.1);
+        assertThat(summaryDto.description()).containsKey("precipitation");
+        assertThat(summaryDto.description().get("precipitation")).isFalse();
+        assertThat(summaryDto.description()).containsKey("wind");
+        assertThat(summaryDto.description().get("wind")).isFalse();
+    }
+
+    @Test
+    void summary_controller_param_out_of_range() throws Exception {
+        double latitudeValue = 91.0;
+        double longitudeValue = 13.41;
+
+        ResultActions forecastPerform = mockMvc
+                .perform(get("/week-summary?latitude="+ latitudeValue + "&longitude=" + longitudeValue));
+
+        forecastPerform.andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void summary_controller_wrong_param_type() throws Exception {
+        double latitudeValue = 52.52;
+        String longitudeValue = "string";
+
+        ResultActions forecastPerform = mockMvc
+                .perform(get("/week-summary?latitude="+ latitudeValue + "&longitude=" + longitudeValue));
+
+        ResultActions wrongParamResult = forecastPerform.andExpect(status().isBadRequest());
+        String errorMessage = wrongParamResult.andReturn().getResponse().getContentAsString();
+        System.out.println("Message: " + errorMessage);
     }
 }

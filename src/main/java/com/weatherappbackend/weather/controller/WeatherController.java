@@ -4,6 +4,8 @@ import com.weatherappbackend.weather.forecast.ForecastDayDto;
 import com.weatherappbackend.weather.forecast.ForecastFacade;
 import com.weatherappbackend.weather.weeksummary.SummaryDto;
 import com.weatherappbackend.weather.weeksummary.SummaryFacade;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,8 +22,8 @@ public class WeatherController {
 
     @GetMapping("/weather-forecast")
     public ResponseEntity<List<ForecastDayDto>> getWeatherForecast(
-            @RequestParam Double latitude,
-            @RequestParam Double longitude
+            @RequestParam @Min(-90) @Max(90) Double latitude,
+            @RequestParam @Min(-180) @Max(180) Double longitude
     ) {
         List<ForecastDayDto> weatherForecast = forecastFacade.getWeatherForecast(latitude, longitude);
         return ResponseEntity.ok(weatherForecast);
@@ -29,8 +31,8 @@ public class WeatherController {
 
     @GetMapping("/week-summary")
     public ResponseEntity<SummaryDto> getWeekSummary(
-            @RequestParam Double latitude,
-            @RequestParam Double longitude
+            @RequestParam @Min(-90) @Max(90) Double latitude,
+            @RequestParam @Min(-180) @Max(180) Double longitude
     ) {
         SummaryDto summaryDto = summaryFacade.getWeekSummary(latitude, longitude);
         return ResponseEntity.ok(summaryDto);
